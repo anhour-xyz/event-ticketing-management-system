@@ -52,6 +52,9 @@ Definitions:
 
 ## Domain Modeling:
 
+<img width="943" height="918" alt="3df6db65e1c40d287060f4c3ea5d6416" src="https://github.com/user-attachments/assets/23552830-ce60-4d11-a898-db59a1226a5d" />
+
+
 ## System Design:
 
 
@@ -61,4 +64,5 @@ RestAPIs Design:
 
 Architecture Design:
 
-<img width="2430" height="1316" alt="image" src="https://github.com/user-attachments/assets/a4a8cbef-df0f-4f47-9ffc-8fae672451e6" />
+<img width="2430" height="1316" alt="2260cf858817bbeadfac919c0f793d5a" src="https://github.com/user-attachments/assets/498f5c66-8ee7-4ffa-ad27-fbbdbf4f7070" />
+
