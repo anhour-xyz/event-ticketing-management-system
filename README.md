@@ -60,6 +60,7 @@ Definitions:
 
 RestAPIs Design:
 
+https://github.com/anhour-xyz/event-ticketing-management-system/blob/main/RestAPIs
 <br>
 
 Architecture Design:
