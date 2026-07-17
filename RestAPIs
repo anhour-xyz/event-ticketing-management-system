@@ -63,7 +63,3 @@ GET /api/v1/tickets/{ticket_id}
 
 ## Retrieve Ticket QR Code
 GET /api/v1/ticktes/{ticket_id}/qr-codes
-
-
------- Event Staff ------
-##
