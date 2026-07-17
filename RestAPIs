@@ -1,0 +1,19 @@
+## Create Event
+POST/api/v1/events
+Request Body: Event
+
+## List Events
+GET /api/v1/events
+
+## Retrieve Events
+GET /api/v1/events/{event_id}
+
+## Update Event
+PUT /api/v1/events/{event_id}
+Request Body: Event
+
+## Delete Event
+DELETE /api/v1/events/{event_id}
+
+## List Ticket Sales
+GET/api/v1/events/{event_id}/tickets
