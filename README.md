@@ -4,7 +4,7 @@
 A web-based platform enabling users to create events, manage ticket sales and generate QR coded tickets for attendees, streamlining the event management and ticket distribution process
 <br>
 
-<ins> Tech Stack: Java, Spring Boot, Spring Security, PostgreSQL, Rest APIs, React, Docker, AWS </ins>
+<ins> Tech Stack: Java, Spring Boot, Spring Security, PostgreSQL, Rest APIs, React, Docker </ins>
 
 <br>
 
