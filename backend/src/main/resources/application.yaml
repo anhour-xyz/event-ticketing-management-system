@@ -1,0 +1,12 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: tickets
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:9090/realms/master/protocol/openid-connect/certs}
+          issuer-uri: ${JWT_ISSUER_URI:http://localhost:9090/realms/master}
