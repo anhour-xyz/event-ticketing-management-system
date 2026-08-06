@@ -1,0 +1,11 @@
+.git
+.vercel
+.agents
+.codex
+
+frontend/node_modules
+frontend/dist
+frontend/*.log
+
+tickets/target
+tickets/*.log
