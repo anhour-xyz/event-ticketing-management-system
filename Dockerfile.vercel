@@ -1,0 +1,21 @@
+FROM eclipse-temurin:21-jdk-jammy AS build
+
+WORKDIR /backend
+
+COPY tickets/.mvn .mvn
+COPY tickets/mvnw ./
+COPY tickets/pom.xml ./
+
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
+
+COPY tickets/src src
+RUN ./mvnw clean package -DskipTests
+
+FROM eclipse-temurin:21-jre-jammy
+
+WORKDIR /app
+
+COPY --from=build /backend/target/*.jar app.jar
+
+CMD ["java", "-jar", "app.jar"]
