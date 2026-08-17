@@ -3,6 +3,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<CreateEventResponseDto> createEvent(
         @AuthenticationPrincipal Jwt jwt,
         @Valid @RequestBody CreateEventRequestDto createEventRequestDto
@@ -50,6 +52,7 @@ public class EventController {
     }
 
     @PutMapping (path = "/{eventId}")
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<UpdateEventResponseDto> updateEvent(
         @AuthenticationPrincipal Jwt jwt,
         @PathVariable UUID eventId,
@@ -65,6 +68,7 @@ public class EventController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<Page<ListEventResponseDto>> listEvents(
         @AuthenticationPrincipal Jwt jwt, Pageable pageable
     ){
@@ -74,6 +78,7 @@ public class EventController {
     }
 
     @GetMapping(path = "/{eventId}")
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<GetEventDetailsResponseDto> getEvent(
         @AuthenticationPrincipal Jwt jwt,
         @PathVariable UUID eventId
@@ -90,7 +95,8 @@ public class EventController {
         return UUID.fromString(jwt.getSubject());
     }
 
-    @DeleteMapping(path = "/{event_id}")
+    @DeleteMapping(path = "/{eventId}")
+    @PreAuthorize("hasRole('ORGANIZER')")
     public ResponseEntity<Void> deleteEvent(
         @AuthenticationPrincipal Jwt jwt,
         @PathVariable UUID eventId

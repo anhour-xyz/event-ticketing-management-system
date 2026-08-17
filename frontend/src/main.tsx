@@ -16,6 +16,7 @@ import DashboardListTickets from "./pages/dashboard-list-tickets.tsx";
 import DashboardPage from "./pages/dashboard-page.tsx";
 import DashboardViewTicketPage from "./pages/dashboard-view-ticket-page.tsx";
 import DashboardValidateQrPage from "./pages/dashboard-validate-qr-page.tsx";
+import OrganizerRoute from "./components/organizer-route.tsx";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,9 @@ const router = createBrowserRouter([
     path: "/dashboard/events",
     element: (
       <ProtectedRoute>
-        <DashboardListEventsPage />
+        <OrganizerRoute>
+          <DashboardListEventsPage />
+        </OrganizerRoute>
       </ProtectedRoute>
     ),
   },
@@ -90,7 +93,9 @@ const router = createBrowserRouter([
     path: "/dashboard/events/create",
     element: (
       <ProtectedRoute>
-        <DashboardManageEventPage />
+        <OrganizerRoute>
+          <DashboardManageEventPage />
+        </OrganizerRoute>
       </ProtectedRoute>
     ),
   },
@@ -98,7 +103,9 @@ const router = createBrowserRouter([
     path: "/dashboard/events/update/:id",
     element: (
       <ProtectedRoute>
-        <DashboardManageEventPage />
+        <OrganizerRoute>
+          <DashboardManageEventPage />
+        </OrganizerRoute>
       </ProtectedRoute>
     ),
   },
@@ -108,8 +115,7 @@ const oidcConfig = {
   authority:
     import.meta.env.VITE_OIDC_AUTHORITY ??
     "http://localhost:9090/realms/event-ticket-platform",
-  client_id:
-    import.meta.env.VITE_OIDC_CLIENT_ID ?? "event-ticket-platform-app",
+  client_id: import.meta.env.VITE_OIDC_CLIENT_ID ?? "event-ticket-platform-app",
   redirect_uri: `${window.location.origin}/callback`,
 };
 

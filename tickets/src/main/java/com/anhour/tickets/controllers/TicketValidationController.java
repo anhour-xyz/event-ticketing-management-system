@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.anhour.tickets.domain.dtos.TicketValidationResponseDto;
 import com.anhour.tickets.domain.entities.TicketValidationMethod;
 import com.anhour.tickets.mappers.TicketValidationMapper;
@@ -21,6 +22,7 @@ public class TicketValidationController {
     private final TicketValidationMapper ticketValidationMapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('STAFF')")
     public ResponseEntity<TicketValidationResponseDto> validateTicket(@RequestBody TicketValidationRequestDto ticketValidationRequestDto){
         TicketValidationMethod method = resolveValidationMethod(ticketValidationRequestDto);
         TicketValidation ticketValidation;

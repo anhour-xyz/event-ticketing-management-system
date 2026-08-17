@@ -9,6 +9,7 @@ import { listPublishedEvents, searchPublishedEvents } from "@/lib/api";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import PublishedEventCard from "@/components/published-event-card";
 import { SimplePagination } from "@/components/simple-pagination";
+import TicketCartButton from "@/components/ticket-cart-button";
 
 const AttendeeLandingPage: React.FC = () => {
   const { isAuthenticated, isLoading, signinRedirect, signoutRedirect } =
@@ -86,6 +87,7 @@ const AttendeeLandingPage: React.FC = () => {
       <div className="mx-auto flex max-w-[1800px] justify-end px-4 py-3">
         {isAuthenticated ? (
           <div className="flex gap-4">
+            <TicketCartButton />
             <Button
               onClick={() => navigate("/dashboard")}
               className="cursor-pointer"

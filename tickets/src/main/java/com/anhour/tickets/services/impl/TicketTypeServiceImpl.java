@@ -39,10 +39,12 @@ public class TicketTypeServiceImpl implements TicketTypeService {
                 String.format("Ticket type with ID %s was not found", ticketTypeId)
             ));
 
-        int purchasedTickets = ticketRepository.countByTicketTypeId(ticketType.getId());
+        int purchasedTickets = ticketRepository.countByTicketTypeIdAndStatus(
+            ticketType.getId(), TicketStatusEnum.PURCHASED
+        );
         Integer totalAvailable = ticketType.getTotalAvailable();
 
-        if (purchasedTickets + 1 > totalAvailable){
+        if (totalAvailable == null || purchasedTickets >= totalAvailable){
             throw new TicketsSoldOutException();
         }
 
@@ -53,7 +55,7 @@ public class TicketTypeServiceImpl implements TicketTypeService {
         Ticket savedTicket = ticketRepository.save(ticket);
         qrCodeService.generateQrCode(savedTicket);
 
-        return ticketRepository.save(savedTicket);
+        return savedTicket;
 
 }
 }

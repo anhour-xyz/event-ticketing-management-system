@@ -2,12 +2,17 @@ import NavBar from "@/components/nav-bar";
 import { SimplePagination } from "@/components/simple-pagination";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { SpringBootPagination, TicketSummary } from "@/domain/domain";
-import { listTickets } from "@/lib/api";
+import {
+  SpringBootPagination,
+  TicketStatus,
+  TicketSummary,
+} from "@/domain/domain";
+import { cancelTicket, listTickets } from "@/lib/api";
 import { AlertCircle, DollarSign, Tag, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { Link } from "react-router";
+import { Button } from "@/components/ui/button";
 
 const DashboardListTickets: React.FC = () => {
   const { isLoading, user } = useAuth();
@@ -17,6 +22,23 @@ const DashboardListTickets: React.FC = () => {
   >();
   const [error, setError] = useState<string | undefined>();
   const [page, setPage] = useState(0);
+
+  const refreshTickets = async () => {
+    if (!user?.access_token) return;
+    setTickets(await listTickets(user.access_token, page));
+  };
+
+  const handleCancel = async (ticketId: string) => {
+    if (!user?.access_token) return;
+
+    try {
+      setError(undefined);
+      await cancelTicket(user.access_token, ticketId);
+      await refreshTickets();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to cancel ticket");
+    }
+  };
 
   useEffect(() => {
     if (isLoading || !user?.access_token) {
@@ -65,8 +87,8 @@ const DashboardListTickets: React.FC = () => {
 
       <div className="max-w-lg mx-auto">
         {tickets?.content.map((ticketItem) => (
-          <Link to={`/dashboard/tickets/${ticketItem.id}`}>
-            <Card key={ticketItem.id} className="bg-gray-900 text-white">
+          <Card key={ticketItem.id} className="mb-4 bg-gray-900 text-white">
+            <Link to={`/dashboard/tickets/${ticketItem.id}`}>
               <CardHeader>
                 <div className="flex justify-between">
                   <div className="flex items-center gap-2">
@@ -96,8 +118,19 @@ const DashboardListTickets: React.FC = () => {
                   </div>
                 </div>
               </CardContent>
-            </Card>
-          </Link>
+            </Link>
+            {ticketItem.status === TicketStatus.PURCHASED && (
+              <CardContent>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => handleCancel(ticketItem.id)}
+                >
+                  Cancel ticket
+                </Button>
+              </CardContent>
+            )}
+          </Card>
         ))}
       </div>
       <div className="flex justify-center py-8">

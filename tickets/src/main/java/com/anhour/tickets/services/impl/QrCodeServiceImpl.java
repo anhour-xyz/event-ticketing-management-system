@@ -1,14 +1,10 @@
 package com.anhour.tickets.services.impl;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
-
 import org.springframework.stereotype.Service;
-
 import com.anhour.tickets.domain.entities.QRCodeStatusEnum;
 import com.anhour.tickets.domain.entities.QrCode;
 import com.anhour.tickets.domain.entities.Ticket;
@@ -19,7 +15,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.QRCodeWriter;
-
 import lombok.AllArgsConstructor;
 
 @Service

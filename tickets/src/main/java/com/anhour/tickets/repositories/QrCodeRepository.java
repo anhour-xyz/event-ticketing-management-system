@@ -10,6 +10,6 @@ import com.anhour.tickets.domain.entities.QrCode;
 import com.anhour.tickets.domain.entities.QRCodeStatusEnum;
 @Repository
 public interface QrCodeRepository extends JpaRepository<QrCode, UUID>{
-    Optional<QrCode> findByTicketAndTicketPurchaserId(UUID ticketId, UUID ticketPurchaseId);
+    Optional<QrCode> findByTicketIdAndTicketPurchaserId(UUID ticketId, UUID ticketPurchaserId);
     Optional<QrCode> findByIdAndStatus(UUID id, QRCodeStatusEnum status);
 }

@@ -62,20 +62,13 @@
       "ticketTypes": []
     },
     {
-      "id": "b048",
-      "name": "Test Drift",
-      "start": "2025-05-08T10:00:00.000Z",
-      "end": "2025-05-08T15:00:00.000Z",
-      "venue": "kjbdskjbff",
-      "status": "PUBLISHED",
-      "ticketTypes": [
-        {
-          "name": "kjbdsfkjbdf",
-          "price": 999,
-          "description": "jkdsbfjhbdfb",
-          "totalAvailable": 1
-        }
-      ]
+      "id": "18bd",
+      "name": "ticket",
+      "start": "2026-08-05T19:00:00.000Z",
+      "end": "2026-08-05T21:00:00.000Z",
+      "venue": "",
+      "status": "DRAFT",
+      "ticketTypes": []
     }
   ],
   "published-events": [

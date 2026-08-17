@@ -19,7 +19,7 @@ const PurchaseTicketPage: React.FC = () => {
       return;
     }
     const timer = setTimeout(() => {
-      navigate("/");
+      navigate("/dashboard/tickets");
     }, 3000);
 
     return () => clearTimeout(timer);

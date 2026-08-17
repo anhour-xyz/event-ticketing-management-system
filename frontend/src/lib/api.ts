@@ -12,8 +12,14 @@ import {
   TicketValidationResponse,
   UpdateEventRequest,
 } from "@/domain/domain";
+import mockDatabase from "../../db.json";
 
 const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const USE_PRODUCTION_MOCK = import.meta.env.PROD && !API_URL;
+
+const mockPublishedEvents = mockDatabase[
+  "published-events"
+] as unknown as PublishedEventDetails[];
 
 const apiFetch = (path: string, init?: RequestInit) =>
   fetch(`${API_URL}${path}`, init);
@@ -201,12 +207,19 @@ export const deleteEvent = async (
 export const listPublishedEvents = async (
   page: number,
 ): Promise<SpringBootPagination<PublishedEventSummary>> => {
-  const response = await apiFetch(`/api/v1/published-events?page=${page}&size=4`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+  if (USE_PRODUCTION_MOCK) {
+    return normalizePagination(mockPublishedEvents, page, 4);
+  }
+
+  const response = await apiFetch(
+    `/api/v1/published-events?page=${page}&size=4`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   const responseBody = await parseJsonResponse(response);
 
@@ -226,6 +239,17 @@ export const searchPublishedEvents = async (
   query: string,
   page: number,
 ): Promise<SpringBootPagination<PublishedEventSummary>> => {
+  if (USE_PRODUCTION_MOCK) {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    const matches = mockPublishedEvents.filter(
+      (event) =>
+        event.name.toLocaleLowerCase().includes(normalizedQuery) ||
+        event.venue.toLocaleLowerCase().includes(normalizedQuery),
+    );
+
+    return normalizePagination(matches, page, 4);
+  }
+
   const response = await apiFetch(
     `/api/v1/published-events?q=${query}&page=${page}&size=4`,
     {
@@ -253,6 +277,16 @@ export const searchPublishedEvents = async (
 export const getPublishedEvent = async (
   id: string,
 ): Promise<PublishedEventDetails> => {
+  if (USE_PRODUCTION_MOCK) {
+    const event = mockPublishedEvents.find((candidate) => candidate.id === id);
+
+    if (!event) {
+      throw new Error("Event not found");
+    }
+
+    return event;
+  }
+
   const response = await apiFetch(`/api/v1/published-events/${id}`, {
     method: "GET",
     headers: {
@@ -325,6 +359,44 @@ export const listTickets = async (
   }
 
   return normalizePagination(responseBody, page, 8);
+};
+
+export const countPurchasedTickets = async (
+  accessToken: string,
+): Promise<number> => {
+  const response = await apiFetch("/api/v1/tickets/count", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const responseBody = await parseJsonResponse(response);
+
+  if (!response.ok) {
+    throw new Error(
+      isErrorResponse(responseBody)
+        ? responseBody.error
+        : `Unable to count tickets (${response.status})`,
+    );
+  }
+
+  return (responseBody as { count: number }).count;
+};
+
+export const cancelTicket = async (
+  accessToken: string,
+  ticketId: string,
+): Promise<void> => {
+  const response = await apiFetch(`/api/v1/tickets/${ticketId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!response.ok) {
+    const responseBody = await parseJsonResponse(response);
+    throw new Error(
+      isErrorResponse(responseBody)
+        ? responseBody.error
+        : `Unable to cancel ticket (${response.status})`,
+    );
+  }
 };
 
 export const getTicket = async (

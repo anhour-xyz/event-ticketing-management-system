@@ -57,7 +57,15 @@ interface DateTimeSelectProperties {
   setTime: (time: string) => void;
   enabled: boolean;
   setEnabled: (isEnabled: boolean) => void;
+  minDate?: Date;
+  maxDate?: Date;
 }
+
+const beginningOfDay = (date: Date): Date => {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+  return result;
+};
 
 const DateTimeSelect: React.FC<DateTimeSelectProperties> = ({
   date,
@@ -66,6 +74,8 @@ const DateTimeSelect: React.FC<DateTimeSelectProperties> = ({
   setTime,
   enabled,
   setEnabled,
+  minDate,
+  maxDate,
 }) => {
   return (
     <div className="flex gap-2 items-center">
@@ -85,6 +95,16 @@ const DateTimeSelect: React.FC<DateTimeSelectProperties> = ({
               <Calendar
                 mode="single"
                 selected={date}
+                disabled={(day) => {
+                  const selectedDay = beginningOfDay(day);
+                  if (minDate && selectedDay < beginningOfDay(minDate)) {
+                    return true;
+                  }
+                  if (maxDate && selectedDay > beginningOfDay(maxDate)) {
+                    return true;
+                  }
+                  return false;
+                }}
                 onSelect={(selectedDate) => {
                   if (!selectedDate) {
                     return;
@@ -360,9 +380,138 @@ const DashboardManageEventPage: React.FC = () => {
     }
   };
 
+  const validateDateRange = (
+    startDate: Date | undefined,
+    startTime: string | undefined,
+    endDate: Date | undefined,
+    endTime: string | undefined,
+    label: string,
+  ): boolean => {
+    if (!startDate || !startTime || !endDate || !endTime) {
+      setError(`${label} start and end dates and times are required.`);
+      return false;
+    }
+
+    const start = combineDateTime(startDate, startTime);
+    const end = combineDateTime(endDate, endTime);
+
+    if (end <= start) {
+      setError(`${label} end must be later than ${label.toLowerCase()} start.`);
+      return false;
+    }
+    return true;
+  };
+
+  const validateEventDates = (): boolean => {
+    if (!eventDateEnabled) {
+      setError("Event start and end are required");
+      return false;
+    }
+
+    if (
+      !eventData.startDate ||
+      !eventData.startTime ||
+      !eventData.endDate ||
+      !eventData.endTime
+    ) {
+      setError("Complete the event start and end time");
+      return false;
+    }
+
+    const eventStart = combineDateTime(
+      eventData.startDate,
+      eventData.startTime,
+    );
+
+    const eventEnd = combineDateTime(eventData.endDate, eventData.endTime);
+
+    if (eventStart < beginningOfDay(new Date())) {
+      setError("Event start cannot be before today.");
+      return false;
+    }
+
+    if (eventEnd <= eventStart) {
+      setError("Event end must be later than event start.");
+      return false;
+    }
+
+    if (!eventSalesDateEnabled) {
+      setError("Ticket sales start and end are required");
+      return false;
+    }
+
+    if (
+      !eventData.salesStartDate ||
+      !eventData.salesStartTime ||
+      !eventData.salesEndDate ||
+      !eventData.salesEndTime
+    ) {
+      setError("Complete the ticket sales start and end dates and time.");
+      return false;
+    }
+
+    const salesStart = combineDateTime(
+      eventData.salesStartDate,
+      eventData.salesStartTime,
+    );
+
+    const salesEnd = combineDateTime(
+      eventData.salesEndDate,
+      eventData.salesEndTime,
+    );
+
+    if (salesStart < beginningOfDay(new Date())) {
+      setError("Ticket sales start can't before today.");
+      return false;
+    }
+
+    if (salesEnd <= salesStart) {
+      setError("Ticket sales end can't before sales start.");
+      return false;
+    }
+
+    if (salesStart >= eventStart) {
+      setError("Ticket sales must start before the event starts.");
+      return false;
+    }
+
+    if (salesEnd >= eventStart) {
+      setError("Ticket sales must end before event starts.");
+      return false;
+    }
+    return true;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(undefined);
+    if (!validateEventDates()) {
+      return;
+    }
+    if (
+      eventDateEnabled &&
+      !validateDateRange(
+        eventData.startDate,
+        eventData.startTime,
+        eventData.endDate,
+        eventData.endTime,
+        "Event",
+      )
+    ) {
+      return;
+    }
+    if (
+      eventSalesDateEnabled &&
+      !validateDateRange(
+        eventData.salesStartDate,
+        eventData.salesStartTime,
+        eventData.salesEndDate,
+        eventData.salesEndTime,
+        "Ticket Sales",
+      )
+    ) {
+      return;
+    }
 
     if (isLoading || !user || !user.access_token) {
       console.error("User not found!");
@@ -431,6 +580,8 @@ const DashboardManageEventPage: React.FC = () => {
     );
   };
 
+  const today = beginningOfDay(new Date());
+
   return (
     <div className="min-h-screen bg-black text-white">
       <NavBar />
@@ -491,6 +642,7 @@ const DashboardManageEventPage: React.FC = () => {
               setTime={(time) => updateField("startTime", time)}
               enabled={eventDateEnabled}
               setEnabled={setEventDateEnabled}
+              minDate={today}
             />
             <p className="text-gray-400 text-xs">
               The date and time that the event starts.
@@ -507,6 +659,7 @@ const DashboardManageEventPage: React.FC = () => {
               setTime={(time) => updateField("endTime", time)}
               enabled={eventDateEnabled}
               setEnabled={setEventDateEnabled}
+              minDate={eventData.startDate ?? today}
             />
             <p className="text-gray-400 text-xs">
               The date and time that the event ends.
@@ -539,6 +692,8 @@ const DashboardManageEventPage: React.FC = () => {
               setTime={(time) => updateField("salesStartTime", time)}
               enabled={eventSalesDateEnabled}
               setEnabled={setEventSalesDateEnabled}
+              minDate={today}
+              maxDate={eventData.startDate}
             />
             <p className="text-gray-400 text-xs">
               The date and time that ticket are available to purchase for the
@@ -556,6 +711,8 @@ const DashboardManageEventPage: React.FC = () => {
               setTime={(time) => updateField("salesEndTime", time)}
               enabled={eventSalesDateEnabled}
               setEnabled={setEventSalesDateEnabled}
+              minDate={eventData.salesStartDate}
+              maxDate={eventData.startDate}
             />
             <p className="text-gray-400 text-xs">
               The date and time that ticket are available to purchase for the
@@ -769,9 +926,7 @@ const DashboardManageEventPage: React.FC = () => {
           )}
 
           <div>
-            <Button onClick={handleFormSubmit}>
-              {isEditMode ? "Update" : "Submit"}
-            </Button>
+            <Button type="submit">{isEditMode ? "Update" : "Submit"}</Button>
           </div>
         </form>
         {/* For Development Only */}
