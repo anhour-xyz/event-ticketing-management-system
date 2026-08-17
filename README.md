@@ -1,6 +1,6 @@
 # Event Ticketing & Management System 🎫
 
-[Demo](https://ticketmaster-hub.vercel.app/)
+[Demo](https://frontend-ebon-ten-39.vercel.app/)
 
 ## Overview:
 A web-based platform enabling users to create events, manage ticket sales and generate QR coded tickets for attendees, streamlining the event management and ticket distribution process
